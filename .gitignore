@@ -1,0 +1,32 @@
+# Go specific
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+*.test
+*.out
+*.prof
+
+# Ignore binary files
+*.png
+*.jpg
+*.jpeg
+*.gif
+*.ico
+
+# Ignore editor-specific files
+.idea/
+.vscode/
+*.sublime*
+*.swp
+
+# Ignore build output
+/bin/
+/pkg/
+/out/
+/vendor/
+
+# Ignore OS-specific files
+.DS_Store
+Thumbs.db
