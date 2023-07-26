@@ -2,16 +2,17 @@ package main
 
 import (
 	// "go_outside/lib"
+	// "fmt"
+	"go_outside/lib"
 	"go_outside/lib/logger"
+	// "os"
 
 	// "github.com/veandco/go-sdl2/img"
 	"github.com/veandco/go-sdl2/sdl"
 )
 
 func main() {
-	// initialize sdl2
 	init_sdl()
-	// Quit at the end
 	defer sdl.Quit()
 
 	window, err := sdl.CreateWindow("test", sdl.WINDOWPOS_UNDEFINED, sdl.WINDOWPOS_UNDEFINED,
@@ -20,6 +21,20 @@ func main() {
 		panic(err)
 	}
 	defer window.Destroy()
+
+	renderer, err := sdl.CreateRenderer(window, -1, sdl.RENDERER_ACCELERATED)
+	if err != nil {
+		panic(err)
+	}
+	defer renderer.Destroy()
+
+	// Load the image
+	imagePath := "assets/textures/test.png" // Replace this with the actual path to your image
+	texture, err := lib.Load_image(imagePath, renderer)
+	if err != nil {
+		panic(err)
+	}
+	defer texture.Destroy()
 
 	surface, err := window.GetSurface()
 	if err != nil {
@@ -31,7 +46,6 @@ func main() {
 
 	rect := sdl.Rect{X: 0, Y: 0, W: 200, H: 200}
 	surface.FillRect(&rect, pixel)
-	window.UpdateSurface()
 
 	running := true
 	for running {
@@ -42,9 +56,20 @@ func main() {
 				break
 			}
 		}
+
+		// Clear the renderer
+		renderer.Clear()
+
+		// Draw the image
+		renderer.Copy(texture, nil, nil)
+
+		// Update the screen
+		renderer.Present()
+
 		logger.Log("amogus", logger.SUCCESS)
 	}
 }
+
 
 func render_pixels(surface *sdl.Surface, rgba [4]int32) uint32 {
 	color := sdl.Color{R: uint8(rgba[0]), G: uint8(rgba[1]), B: uint8(rgba[2]), A: uint8(rgba[3])} // purple

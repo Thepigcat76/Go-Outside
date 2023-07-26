@@ -10,13 +10,12 @@ import (
 )
 
 func Load_image(filepath string, renderer *sdl.Renderer) (*sdl.Texture, error) {
-
 	// Load the image
-	image, err := img.Load("")
+	image, err := img.Load(filepath)
 	if err != nil {
-        return nil, fmt.Errorf("could not load image: %v", err)
-    }
-    defer image.Free()
+		return nil, fmt.Errorf("could not load image: %v", err)
+	}
+	defer image.Free()
 
 	// Create the texture
 	texture, err := renderer.CreateTextureFromSurface(image)
@@ -24,6 +23,6 @@ func Load_image(filepath string, renderer *sdl.Renderer) (*sdl.Texture, error) {
 		return nil, fmt.Errorf("could not create texture: %v", err)
 	}
 
-	logger.Log("succesfully loaded texture: %s" + filepath, logger.SUCCESS)
+	logger.Log("successfully loaded texture: "+filepath, logger.SUCCESS)
 	return texture, nil
 }
