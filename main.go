@@ -2,7 +2,6 @@ package main
 
 import (
 	// "go_outside/lib"
-	// "fmt"
 	"go_outside/lib"
 	"go_outside/lib/logger"
 	// "os"
@@ -21,6 +20,8 @@ func main() {
 		panic(err)
 	}
 	defer window.Destroy()
+
+	window.SetResizable(true)
 
 	renderer, err := sdl.CreateRenderer(window, -1, sdl.RENDERER_ACCELERATED)
 	if err != nil {
@@ -47,6 +48,8 @@ func main() {
 	rect := sdl.Rect{X: 0, Y: 0, W: 200, H: 200}
 	surface.FillRect(&rect, pixel)
 
+	redColor := sdl.Color{R: 255, G: 0, B: 0, A: 255}
+
 	running := true
 	for running {
 		for event := sdl.PollEvent(); event != nil; event = sdl.PollEvent() {
@@ -54,22 +57,29 @@ func main() {
 			case *sdl.QuitEvent:
 				running = false
 				break
+			case *sdl.KeyboardEvent:
+				keyEvent := event.(*sdl.KeyboardEvent)
+				if keyEvent.Keysym.Scancode == sdl.SCANCODE_ESCAPE {
+					logger.Log("Requested Exit", logger.WARNING)
+					running = false
+				}
 			}
 		}
+
+		
 
 		// Clear the renderer
 		renderer.Clear()
 
+		renderer.SetDrawColor(redColor.R, redColor.G, redColor.B, redColor.A)
+
 		// Draw the image
-		renderer.Copy(texture, nil, nil)
+		renderer.Copy(texture, nil, &rect)
 
 		// Update the screen
 		renderer.Present()
-
-		logger.Log("amogus", logger.SUCCESS)
 	}
 }
-
 
 func render_pixels(surface *sdl.Surface, rgba [4]int32) uint32 {
 	color := sdl.Color{R: uint8(rgba[0]), G: uint8(rgba[1]), B: uint8(rgba[2]), A: uint8(rgba[3])} // purple
@@ -78,7 +88,7 @@ func render_pixels(surface *sdl.Surface, rgba [4]int32) uint32 {
 }
 
 func init_sdl() error {
-	err := sdl.Init(sdl.INIT_EVERYTHING);
+	err := sdl.Init(sdl.INIT_EVERYTHING)
 	if err != nil {
 		panic(err)
 	}
