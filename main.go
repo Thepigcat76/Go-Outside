@@ -11,6 +11,7 @@ import (
 )
 
 func main() {
+
 	init_sdl()
 	defer sdl.Quit()
 
@@ -43,12 +44,13 @@ func main() {
 	}
 	surface.FillRect(nil, 0)
 
-	pixel := render_pixels(surface, [4]int32{255, 0, 255, 255})
+	// pixel := render_pixels(surface, [4]int32{255, 0, 255, 255})
 
-	rect := sdl.Rect{X: 0, Y: 0, W: 200, H: 200}
-	surface.FillRect(&rect, pixel)
+	rect := sdl.FRect{X: 0, Y: 0, W: 200, H: 200}
 
-	redColor := sdl.Color{R: 255, G: 0, B: 0, A: 255}
+	redColor := sdl.Color{R: 255, G: 255, B: 255, A: 255}
+
+	keys := make([]bool, sdl.NUM_SCANCODES)
 
 	running := true
 	for running {
@@ -59,22 +61,55 @@ func main() {
 				break
 			case *sdl.KeyboardEvent:
 				keyEvent := event.(*sdl.KeyboardEvent)
-				if keyEvent.Keysym.Scancode == sdl.SCANCODE_ESCAPE {
+				keyPressed := keyEvent.Keysym.Scancode
+				// Check if player pressed escape to exit
+				if keyPressed == sdl.SCANCODE_ESCAPE {
 					logger.Log("Requested Exit", logger.WARNING)
 					running = false
+				}
+
+				// Check for keybinds that are initialized
+				// after the event loop
+				if keyEvent.Type == sdl.KEYDOWN {
+					// Set the corresponding key state to true when a key is pressed
+					keys[keyEvent.Keysym.Scancode] = true
+				} else if keyEvent.Type == sdl.KEYUP {
+					// Set the corresponding key state to false when a key is released
+					keys[keyEvent.Keysym.Scancode] = false
 				}
 			}
 		}
 
-		
-
 		// Clear the renderer
-		renderer.Clear()
 
 		renderer.SetDrawColor(redColor.R, redColor.G, redColor.B, redColor.A)
+		renderer.Clear()
+
+		rectNormal := &sdl.Rect{
+			X: int32(rect.X),
+			Y: int32(rect.Y),
+			W: int32(rect.W),
+			H: int32(rect.H),
+		}
+
+		renderer.SetDrawColor(255, 0, 0, 255)
+		renderer.FillRectF(&rect)
 
 		// Draw the image
-		renderer.Copy(texture, nil, &rect)
+		renderer.Copy(texture, nil, rectNormal)
+
+		if keys[sdl.SCANCODE_W] {
+			rect.Y -= 0.1
+		}
+		if keys[sdl.SCANCODE_S] {
+			rect.Y += 0.1
+		}
+		if keys[sdl.SCANCODE_A] {
+			rect.X -= 0.1
+		}
+		if keys[sdl.SCANCODE_D] {
+			rect.X += 0.1
+		}
 
 		// Update the screen
 		renderer.Present()
