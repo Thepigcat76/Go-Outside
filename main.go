@@ -1,14 +1,18 @@
 package main
 
 import (
-	// "go_outside/lib"
-	"go_outside/lib"
 	"go_outside/lib/logger"
+
 	// "os"
 
-	// "github.com/veandco/go-sdl2/img"
+	"embed"
+
+	"github.com/veandco/go-sdl2/img"
 	"github.com/veandco/go-sdl2/sdl"
 )
+
+//go:embed assets
+var assets embed.FS
 
 func main() {
 
@@ -24,17 +28,34 @@ func main() {
 
 	window.SetResizable(true)
 
+	imageData, err := assets.ReadFile("assets/textures/player.png")
+	if err != nil {
+		logger.Log("Failed to read file: "+err.Error(), logger.ERROR)
+	}
+
+	// Load the image into an SDL RWops
+	rwops, err := sdl.RWFromMem(imageData)
+	if err != nil {
+		logger.Log("Failed to create RWops: "+sdl.GetError().Error(), logger.ERROR)
+	}
+	defer rwops.Close()
+
+	surface_raw, err := img.LoadPNGRW(rwops) // Use 1 for freeing RWops after loading
+	if err != nil {
+		logger.Log("Failed to create Surface: "+err.Error(), logger.ERROR)
+	}
+	defer surface_raw.Free()
+
 	renderer, err := sdl.CreateRenderer(window, -1, sdl.RENDERER_ACCELERATED)
 	if err != nil {
 		panic(err)
 	}
 	defer renderer.Destroy()
 
-	// Load the image
-	imagePath := "assets/textures/player.png" // Replace this with the actual path to your image
-	texture, err := lib.Load_image(imagePath, renderer)
+	// Create a texture from the surface
+	texture, err := renderer.CreateTextureFromSurface(surface_raw)
 	if err != nil {
-		panic(err)
+		logger.Log("Failed to create Texture: "+err.Error(), logger.ERROR)
 	}
 	defer texture.Destroy()
 
