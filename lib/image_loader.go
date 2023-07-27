@@ -2,6 +2,7 @@ package lib
 
 import (
 	"fmt"
+	"strings"
 
 	"go_outside/lib/logger"
 
@@ -23,6 +24,9 @@ func Load_image(filepath string, renderer *sdl.Renderer) (*sdl.Texture, error) {
 		return nil, fmt.Errorf("could not create texture: %v", err)
 	}
 
-	logger.Log("successfully loaded texture: "+filepath, logger.SUCCESS)
+	trimmed_path := strings.Split(filepath, "/")
+
+	logger.Log("successfully loaded texture: "+ trimmed_path[len(trimmed_path)-1], logger.SUCCESS)
+	
 	return texture, nil
 }

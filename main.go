@@ -31,7 +31,7 @@ func main() {
 	defer renderer.Destroy()
 
 	// Load the image
-	imagePath := "assets/textures/test.png" // Replace this with the actual path to your image
+	imagePath := "assets/textures/player.png" // Replace this with the actual path to your image
 	texture, err := lib.Load_image(imagePath, renderer)
 	if err != nil {
 		panic(err)
@@ -46,7 +46,7 @@ func main() {
 
 	// pixel := render_pixels(surface, [4]int32{255, 0, 255, 255})
 
-	rect := sdl.FRect{X: 0, Y: 0, W: 200, H: 200}
+	rect := sdl.FRect{X: 0, Y: 0, W: 80, H: 120}
 
 	redColor := sdl.Color{R: 255, G: 255, B: 255, A: 255}
 
@@ -91,9 +91,6 @@ func main() {
 			W: int32(rect.W),
 			H: int32(rect.H),
 		}
-
-		renderer.SetDrawColor(255, 0, 0, 255)
-		renderer.FillRectF(&rect)
 
 		// Draw the image
 		renderer.Copy(texture, nil, rectNormal)
