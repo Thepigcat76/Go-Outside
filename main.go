@@ -2,12 +2,12 @@ package main
 
 import (
 	"go_outside/lib/logger"
+	"go_outside/lib"
 
 	// "os"
 
 	"embed"
 
-	"github.com/veandco/go-sdl2/img"
 	"github.com/veandco/go-sdl2/sdl"
 )
 
@@ -28,25 +28,6 @@ func main() {
 
 	window.SetResizable(true)
 
-	filePath := "assets/textures/player.png"
-
-	imageData, err := assets.ReadFile(filePath)
-	if err != nil {
-		logger.Log("Failed to read file: "+err.Error(), logger.ERROR)
-	}
-
-	// Load the image into an SDL RWops
-	rwops, err := sdl.RWFromMem(imageData)
-	if err != nil {
-		logger.Log("Failed to create RWops: "+sdl.GetError().Error(), logger.ERROR)
-	}
-	defer rwops.Close()
-
-	surface_raw, err := img.LoadPNGRW(rwops)
-	if err != nil {
-		logger.Log("Failed to create Surface from Texture: "+filePath+": "+err.Error(), logger.ERROR)
-	}
-	defer surface_raw.Free()
 
 	renderer, err := sdl.CreateRenderer(window, -1, sdl.RENDERER_ACCELERATED)
 	if err != nil {
@@ -54,11 +35,7 @@ func main() {
 	}
 	defer renderer.Destroy()
 
-	// Create a texture from the surface
-	texture, err := renderer.CreateTextureFromSurface(surface_raw)
-	if err != nil {
-		logger.Log("Failed to create Texture: "+err.Error(), logger.ERROR)
-	}
+	texture, err := lib.Load_image("assets/textures/player.png", renderer, assets)
 	defer texture.Destroy()
 
 	surface, err := window.GetSurface()
@@ -86,16 +63,17 @@ func main() {
 			switch event.(type) {
 			case *sdl.QuitEvent:
 				running = false
+				logger.Log("Requested Exit", logger.WARNING)
 				break
 			case *sdl.WindowEvent:
 				// Check if it's a window event related to mouse motion
 				winEvent := event.(*sdl.WindowEvent)
 				if winEvent.Event == sdl.WINDOWEVENT_ENTER {
 					cursorInside = true
-					println("Cursor entered the window.")
+					logger.Log("Cursor entered the window.", logger.INFO)
 				} else if winEvent.Event == sdl.WINDOWEVENT_LEAVE {
 					cursorInside = false
-					println("Cursor left the window.")
+					logger.Log("Cursor left the window.", logger.INFO)
 				}
 			case *sdl.KeyboardEvent:
 				keyEvent := event.(*sdl.KeyboardEvent)
@@ -131,15 +109,18 @@ func main() {
 		}
 
 		mouseX, mouseY, _ := sdl.GetMouseState()
-		leftClick, rightClick := checkMouseClick()
+		leftClick, _ := checkMouseClick()
 
 
 		// Clear the renderer
 
 		renderer.SetDrawColor(255, 0, 0, 255)
 
-		if checkCollision(&rect2, mouseX, mouseY) && cursorInside && (leftClick || rightClick) {
-			renderer.SetDrawColor(blueColor.R, blueColor.G, blueColor.B, blueColor.A)
+		if checkCollision(&rect2, mouseX, mouseY) && cursorInside {
+			renderer.SetDrawColor(0, 0, 100, 255)
+			if leftClick {
+				renderer.SetDrawColor(blueColor.R, blueColor.G, blueColor.B, blueColor.A)
+			}
 		}
 
 		renderer.Clear()
