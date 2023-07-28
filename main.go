@@ -28,7 +28,9 @@ func main() {
 
 	window.SetResizable(true)
 
-	imageData, err := assets.ReadFile("assets/textures/player.png")
+	filePath := "assets/textures/player.png"
+
+	imageData, err := assets.ReadFile(filePath)
 	if err != nil {
 		logger.Log("Failed to read file: "+err.Error(), logger.ERROR)
 	}
@@ -40,15 +42,15 @@ func main() {
 	}
 	defer rwops.Close()
 
-	surface_raw, err := img.LoadPNGRW(rwops) // Use 1 for freeing RWops after loading
+	surface_raw, err := img.LoadPNGRW(rwops)
 	if err != nil {
-		logger.Log("Failed to create Surface: "+err.Error(), logger.ERROR)
+		logger.Log("Failed to create Surface from Texture: "+filePath+": "+err.Error(), logger.ERROR)
 	}
 	defer surface_raw.Free()
 
 	renderer, err := sdl.CreateRenderer(window, -1, sdl.RENDERER_ACCELERATED)
 	if err != nil {
-		panic(err)
+		logger.Log("Failed to create Renderer: "+err.Error(), logger.ERROR)
 	}
 	defer renderer.Destroy()
 
@@ -61,7 +63,7 @@ func main() {
 
 	surface, err := window.GetSurface()
 	if err != nil {
-		panic(err)
+		logger.Log("Failed to create Surface: "+sdl.GetError().Error(), logger.ERROR)
 	}
 	surface.FillRect(nil, 0)
 
@@ -69,17 +71,32 @@ func main() {
 
 	rect := sdl.FRect{X: 0, Y: 0, W: 80, H: 120}
 
-	redColor := sdl.Color{R: 255, G: 255, B: 255, A: 255}
+	rect2 := sdl.Rect{X: 0, Y: 0, W: 80, H: 120}
+
+	// redColor := sdl.Color{R: 255, G: 255, B: 255, A: 255}
+	blueColor := sdl.Color{R: 0, G: 0, B: 255, A: 255}
 
 	keys := make([]bool, sdl.NUM_SCANCODES)
 
+	cursorInside := false
 	running := true
+	logger.Log("Started successfully", logger.SUCCESS)
 	for running {
 		for event := sdl.PollEvent(); event != nil; event = sdl.PollEvent() {
 			switch event.(type) {
 			case *sdl.QuitEvent:
 				running = false
 				break
+			case *sdl.WindowEvent:
+				// Check if it's a window event related to mouse motion
+				winEvent := event.(*sdl.WindowEvent)
+				if winEvent.Event == sdl.WINDOWEVENT_ENTER {
+					cursorInside = true
+					println("Cursor entered the window.")
+				} else if winEvent.Event == sdl.WINDOWEVENT_LEAVE {
+					cursorInside = false
+					println("Cursor left the window.")
+				}
 			case *sdl.KeyboardEvent:
 				keyEvent := event.(*sdl.KeyboardEvent)
 				keyPressed := keyEvent.Keysym.Scancode
@@ -98,13 +115,36 @@ func main() {
 					// Set the corresponding key state to false when a key is released
 					keys[keyEvent.Keysym.Scancode] = false
 				}
+			case *sdl.MouseButtonEvent:
+				// Check if it's a mouse button down event
+				mouseEvent := event.(*sdl.MouseButtonEvent)
+				if mouseEvent.Type == sdl.MOUSEBUTTONDOWN {
+					// Left mouse button pressed
+					if mouseEvent.Button == sdl.BUTTON_LEFT {
+					}
+					// Right mouse button pressed
+					if mouseEvent.Button == sdl.BUTTON_RIGHT {
+					}
+				}
 			}
+			
 		}
+
+		mouseX, mouseY, _ := sdl.GetMouseState()
+		leftClick, rightClick := checkMouseClick()
+
 
 		// Clear the renderer
 
-		renderer.SetDrawColor(redColor.R, redColor.G, redColor.B, redColor.A)
+		renderer.SetDrawColor(255, 0, 0, 255)
+
+		if checkCollision(&rect2, mouseX, mouseY) && cursorInside && (leftClick || rightClick) {
+			renderer.SetDrawColor(blueColor.R, blueColor.G, blueColor.B, blueColor.A)
+		}
+
 		renderer.Clear()
+		renderer.SetDrawColor(100, 100, 100, 255)
+		renderer.FillRect(&rect2)
 
 		rectNormal := &sdl.Rect{
 			X: int32(rect.X),
@@ -146,4 +186,22 @@ func init_sdl() error {
 		panic(err)
 	}
 	return err
+}
+
+func checkCollision(rect *sdl.Rect, mouseX, mouseY int32) bool {
+	// Check if the mouse position is within the bounding rectangle
+	return mouseX >= rect.X && mouseX <= rect.X+rect.W && mouseY >= rect.Y && mouseY <= rect.Y+rect.H
+}
+
+func checkMouseClick() (leftClick, rightClick bool) {
+	// Get the current state of the mouse buttons
+	_, _, mouseState := sdl.GetMouseState()
+
+	// Check if the left mouse button is clicked
+	leftClick = mouseState&sdl.ButtonLMask() != 0
+
+	// Check if the right mouse button is clicked
+	rightClick = mouseState&sdl.ButtonRMask() != 0
+
+	return leftClick, rightClick
 }
