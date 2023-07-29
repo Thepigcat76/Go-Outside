@@ -1,4 +1,4 @@
-package lib
+package util
 
 import (
 	"embed"
@@ -11,18 +11,18 @@ import (
 )
 
 func Load_image(filepath string, renderer *sdl.Renderer, assets embed.FS) *sdl.Texture {
-	
+
 	// Failed to read file
 	imageData, err := assets.ReadFile(filepath + ".png")
 	if err != nil {
-		logger.Log("Failed to load image: " + err.Error(), logger.ERROR)
+		logger.Log("Failed to load image: "+err.Error(), logger.ERROR)
 		return nil
 	}
 
 	// Convert file to bytes
 	rwops, err := sdl.RWFromMem(imageData)
 	if err != nil {
-		logger.Log("Failed to load image: " + sdl.GetError().Error(), logger.ERROR)
+		logger.Log("Failed to load image: "+sdl.GetError().Error(), logger.ERROR)
 		return nil
 	}
 	defer rwops.Close()
@@ -30,7 +30,7 @@ func Load_image(filepath string, renderer *sdl.Renderer, assets embed.FS) *sdl.T
 	// Load from memory
 	surface_raw, err := img.LoadPNGRW(rwops)
 	if err != nil {
-		logger.Log("Failed to load texture from raw: " + err.Error(), logger.ERROR)
+		logger.Log("Failed to load texture from raw: "+err.Error(), logger.ERROR)
 		return nil
 	}
 	defer surface_raw.Free()
@@ -38,14 +38,14 @@ func Load_image(filepath string, renderer *sdl.Renderer, assets embed.FS) *sdl.T
 	// Create the texture
 	texture, err := renderer.CreateTextureFromSurface(surface_raw)
 	if err != nil {
-		logger.Log("Could not create texture: " + err.Error(), logger.ERROR)
+		logger.Log("Could not create texture: "+err.Error(), logger.ERROR)
 		return nil
 	}
 
 	trimmed_path := strings.Split(filepath, "/")
 
-	logger.Log("successfully loaded texture: "+ trimmed_path[len(trimmed_path)-1], logger.SUCCESS)
-	
+	logger.Log("successfully loaded texture: "+trimmed_path[len(trimmed_path)-1], logger.SUCCESS)
+
 	return texture
 }
 
@@ -119,4 +119,44 @@ func Convert_frect_to_rect(frect *sdl.FRect) sdl.Rect {
 		H: int32(frect.H),
 	}
 	return *rect
+}
+
+type Timer struct {
+	Time       int32
+	Reset_time int32
+	Reset_bool bool
+	running    bool
+}
+
+func Create_timer() Timer {
+	return Timer{Time: 0, Reset_time: 0, Reset_bool: false, running: false}
+}
+
+func (t *Timer) Start() {
+	t.running = true
+}
+
+// run has to be called for every timer
+// regardless whether it is actually running or not
+func (t *Timer) Run() {
+	if t.running == true {
+		t.Time++
+	}
+}
+
+func (t *Timer) Stop() {
+	t.running = false
+}
+
+func (t *Timer) Reset() {
+	t.Time = 0
+	t.Reset_time++
+	t.Reset_bool = true
+}
+
+func (t *Timer) Stop_and_reset() {
+	t.running = false
+	t.Time = 0
+	t.Reset_time++
+	t.Reset_bool = true
 }

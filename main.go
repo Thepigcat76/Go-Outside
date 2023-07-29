@@ -1,9 +1,9 @@
 package main
 
 import (
-	"go_outside/lib"
-	"go_outside/lib/logger"
 	"go_outside/lib/gui"
+	"go_outside/lib/logger"
+	"go_outside/lib/util"
 
 	"embed"
 
@@ -14,16 +14,16 @@ import (
 var assets embed.FS
 
 func main() {
-	lib.Init_sdl()
+	util.Init_sdl()
 	defer sdl.Quit()
 
-	window := lib.Create_window(800, 600, true)
+	window := util.Create_window(800, 600, true)
 	defer window.Destroy()
 
-	renderer := lib.Create_renderer(window)
+	renderer := util.Create_renderer(window)
 	defer renderer.Destroy()
 
-	texture := lib.Load_image("assets/textures/player", renderer, assets)
+	texture := util.Load_image("assets/textures/player", renderer, assets)
 	defer texture.Destroy()
 
 	rect := sdl.FRect{X: 0, Y: 0, W: 80, H: 120}
@@ -31,7 +31,8 @@ func main() {
 	keys := make([]bool, sdl.NUM_SCANCODES)
 
 	test_button := gui.Create_button("test_button", "assets/textures/test_button", renderer, assets, 200, 200, 100, 100)
-	test_button.Visible = false
+
+	test_button_timer := util.Create_timer()
 
 	running := true
 	logger.Log("Started successfully", logger.SUCCESS)
@@ -72,25 +73,27 @@ func main() {
 					}
 				}
 			}
-			
+
 		}
 
 		// Clear the renderer
 		renderer.SetDrawColor(255, 0, 0, 255)
 		renderer.Clear()
 
-		rect_normal := lib.Convert_frect_to_rect(&rect)
+		rect_normal := util.Convert_frect_to_rect(&rect)
 
 		// Draw the image
 		renderer.Copy(texture, nil, &rect_normal)
 
-		if keys[sdl.SCANCODE_ESCAPE] {
-			test_button.Visible = true
+		if test_button.Clicked {
+			test_button_timer.Start()
+		}
+		if test_button.Clicked && test_button_timer.Time > 50 {
+			test_button_timer.Reset()
 		}
 
-		if test_button.Clicked {
-			rect.X = 500
-		}
+		println(test_button_timer.Time)
+		println(test_button_timer.Reset_time)
 
 		if keys[sdl.SCANCODE_W] {
 			rect.Y -= 0.1
@@ -104,7 +107,10 @@ func main() {
 		if keys[sdl.SCANCODE_D] {
 			rect.X += 0.1
 		}
+
 		test_button.Draw_button(renderer)
+
+		test_button_timer.Run()
 
 		// Update the screen
 		renderer.Present()
