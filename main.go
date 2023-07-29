@@ -31,6 +31,7 @@ func main() {
 	keys := make([]bool, sdl.NUM_SCANCODES)
 
 	test_button := gui.Create_button("test_button", "assets/textures/test_button", renderer, assets, 200, 200, 100, 100)
+	test_button.Visible = false
 
 	running := true
 	logger.Log("Started successfully", logger.SUCCESS)
@@ -45,7 +46,7 @@ func main() {
 				key_event := event.(*sdl.KeyboardEvent)
 				key_pressed := key_event.Keysym.Scancode
 				// Check if player pressed escape to exit
-				if key_pressed == sdl.SCANCODE_ESCAPE {
+				if key_pressed == sdl.SCANCODE_COMMA {
 					logger.Log("Requested Exit", logger.WARNING)
 					running = false
 				}
@@ -83,7 +84,9 @@ func main() {
 		// Draw the image
 		renderer.Copy(texture, nil, &rect_normal)
 
-		test_button.Draw_button(renderer)
+		if keys[sdl.SCANCODE_ESCAPE] {
+			test_button.Visible = true
+		}
 
 		if test_button.Clicked {
 			rect.X = 500
@@ -101,6 +104,7 @@ func main() {
 		if keys[sdl.SCANCODE_D] {
 			rect.X += 0.1
 		}
+		test_button.Draw_button(renderer)
 
 		// Update the screen
 		renderer.Present()
