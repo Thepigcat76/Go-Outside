@@ -9,8 +9,8 @@ import (
 )
 
 type Button struct {
-	name string
-	clicked bool
+	Name string
+	Clicked bool
 	texture_std *sdl.Texture
 	texture_sel *sdl.Texture
 	button_rect *sdl.Rect
@@ -21,7 +21,7 @@ func Create_button(name string, texturePath string, renderer *sdl.Renderer, asse
 	texture_sel := lib.Load_image(texturePath + "_selected", renderer, assets)
 	button_rect := sdl.Rect{X: X, Y: Y, W: W, H: H}
 
-	return Button{name: name, clicked: false, texture_std: texture_std, texture_sel: texture_sel, button_rect: &button_rect}
+	return Button{Name: name, Clicked: false, texture_std: texture_std, texture_sel: texture_sel, button_rect: &button_rect}
 }
 
 func (b *Button) Draw_button(renderer *sdl.Renderer) {
@@ -30,19 +30,11 @@ func (b *Button) Draw_button(renderer *sdl.Renderer) {
 	if lib.Collide_point(b.button_rect, mouse_x, mouse_y) {
 		renderer.Copy(b.texture_sel, nil ,b.button_rect)
 		if left_click {
-			b.clicked = true
+			b.Clicked = true
 		} else {
-			b.clicked = false
+			b.Clicked = false
 		}
 	} else {
 		renderer.Copy(b.texture_std, nil ,b.button_rect)
 	}
-}
-
-func (b *Button) Get_name() string {
-	return b.name
-}
-
-func (b *Button) Get_clicked() bool {
-	return b.clicked
 }

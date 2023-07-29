@@ -39,7 +39,7 @@ func main() {
 
 	keys := make([]bool, sdl.NUM_SCANCODES)
 
-	test_button := gui.Create_button("test_button", "assets/textures/infinity_sword", renderer, assets, 200, 200, 100, 100)
+	test_button := gui.Create_button("test_button", "assets/textures/test_button", renderer, assets, 200, 200, 100, 100)
 
 	cursor_inside := false
 	running := true
@@ -117,9 +117,10 @@ func main() {
 		// Draw the image
 		renderer.Copy(texture, nil, &rect_normal)
 
-		test_button.Draw_button(renderer) 
-		if test_button.Get_clicked() {
-			logger.Log("clicked " + test_button.Get_name(), logger.INFO)
+		test_button.Draw_button(renderer)
+
+		if test_button.Clicked {
+			logger.Log("clicked " + test_button.Name, logger.INFO)
 		}
 
 		if keys[sdl.SCANCODE_W] {
