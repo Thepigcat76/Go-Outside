@@ -1,10 +1,9 @@
 package main
 
 import (
-	"go_outside/lib/logger"
 	"go_outside/lib"
-
-	// "os"
+	"go_outside/lib/logger"
+	"go_outside/lib/gui"
 
 	"embed"
 
@@ -15,34 +14,19 @@ import (
 var assets embed.FS
 
 func main() {
-
-	init_sdl()
+	lib.Init_sdl()
 	defer sdl.Quit()
 
-	window, err := sdl.CreateWindow("test", sdl.WINDOWPOS_UNDEFINED, sdl.WINDOWPOS_UNDEFINED,
-		800, 600, sdl.WINDOW_SHOWN)
-	if err != nil {
-		panic(err)
-	}
+	window := lib.Create_window(800, 600, true)
 	defer window.Destroy()
 
-	window.SetResizable(true)
-
-
-	renderer, err := sdl.CreateRenderer(window, -1, sdl.RENDERER_ACCELERATED)
-	if err != nil {
-		logger.Log("Failed to create Renderer: "+err.Error(), logger.ERROR)
-	}
+	renderer := lib.Create_renderer(window)
 	defer renderer.Destroy()
 
-	texture, err := lib.Load_image("assets/textures/player.png", renderer, assets)
+	texture := lib.Load_image("assets/textures/player", renderer, assets)
 	defer texture.Destroy()
 
-	surface, err := window.GetSurface()
-	if err != nil {
-		logger.Log("Failed to create Surface: "+sdl.GetError().Error(), logger.ERROR)
-	}
-	surface.FillRect(nil, 0)
+	// surface := create_surface_from_window(window)
 
 	// pixel := render_pixels(surface, [4]int32{255, 0, 255, 255})
 
@@ -51,11 +35,13 @@ func main() {
 	rect2 := sdl.Rect{X: 0, Y: 0, W: 80, H: 120}
 
 	// redColor := sdl.Color{R: 255, G: 255, B: 255, A: 255}
-	blueColor := sdl.Color{R: 0, G: 0, B: 255, A: 255}
+	blue_color := sdl.Color{R: 0, G: 0, B: 255, A: 255}
 
 	keys := make([]bool, sdl.NUM_SCANCODES)
 
-	cursorInside := false
+	test_button := gui.Create_button("test_button", "assets/textures/infinity_sword", renderer, assets, 200, 200, 100, 100)
+
+	cursor_inside := false
 	running := true
 	logger.Log("Started successfully", logger.SUCCESS)
 	for running {
@@ -67,59 +53,58 @@ func main() {
 				break
 			case *sdl.WindowEvent:
 				// Check if it's a window event related to mouse motion
-				winEvent := event.(*sdl.WindowEvent)
-				if winEvent.Event == sdl.WINDOWEVENT_ENTER {
-					cursorInside = true
+				win_event := event.(*sdl.WindowEvent)
+				if win_event.Event == sdl.WINDOWEVENT_ENTER {
+					cursor_inside = true
 					logger.Log("Cursor entered the window.", logger.INFO)
-				} else if winEvent.Event == sdl.WINDOWEVENT_LEAVE {
-					cursorInside = false
+				} else if win_event.Event == sdl.WINDOWEVENT_LEAVE {
+					cursor_inside = false
 					logger.Log("Cursor left the window.", logger.INFO)
 				}
 			case *sdl.KeyboardEvent:
-				keyEvent := event.(*sdl.KeyboardEvent)
-				keyPressed := keyEvent.Keysym.Scancode
+				key_event := event.(*sdl.KeyboardEvent)
+				key_pressed := key_event.Keysym.Scancode
 				// Check if player pressed escape to exit
-				if keyPressed == sdl.SCANCODE_ESCAPE {
+				if key_pressed == sdl.SCANCODE_ESCAPE {
 					logger.Log("Requested Exit", logger.WARNING)
 					running = false
 				}
 
 				// Check for keybinds that are initialized
 				// after the event loop
-				if keyEvent.Type == sdl.KEYDOWN {
+				if key_event.Type == sdl.KEYDOWN {
 					// Set the corresponding key state to true when a key is pressed
-					keys[keyEvent.Keysym.Scancode] = true
-				} else if keyEvent.Type == sdl.KEYUP {
+					keys[key_event.Keysym.Scancode] = true
+				} else if key_event.Type == sdl.KEYUP {
 					// Set the corresponding key state to false when a key is released
-					keys[keyEvent.Keysym.Scancode] = false
+					keys[key_event.Keysym.Scancode] = false
 				}
 			case *sdl.MouseButtonEvent:
 				// Check if it's a mouse button down event
-				mouseEvent := event.(*sdl.MouseButtonEvent)
-				if mouseEvent.Type == sdl.MOUSEBUTTONDOWN {
+				mouse_event := event.(*sdl.MouseButtonEvent)
+				if mouse_event.Type == sdl.MOUSEBUTTONDOWN {
 					// Left mouse button pressed
-					if mouseEvent.Button == sdl.BUTTON_LEFT {
+					if mouse_event.Button == sdl.BUTTON_LEFT {
 					}
 					// Right mouse button pressed
-					if mouseEvent.Button == sdl.BUTTON_RIGHT {
+					if mouse_event.Button == sdl.BUTTON_RIGHT {
 					}
 				}
 			}
 			
 		}
 
-		mouseX, mouseY, _ := sdl.GetMouseState()
-		leftClick, _ := checkMouseClick()
-
+		mouse_x, mouse_y, _ := sdl.GetMouseState()
+		left_click, _ := lib.Mouse_clicked()
 
 		// Clear the renderer
 
 		renderer.SetDrawColor(255, 0, 0, 255)
 
-		if checkCollision(&rect2, mouseX, mouseY) && cursorInside {
+		if lib.Collide_point(&rect2, mouse_x, mouse_y) && cursor_inside {
 			renderer.SetDrawColor(0, 0, 100, 255)
-			if leftClick {
-				renderer.SetDrawColor(blueColor.R, blueColor.G, blueColor.B, blueColor.A)
+			if left_click {
+				renderer.SetDrawColor(blue_color.R, blue_color.G, blue_color.B, blue_color.A)
 			}
 		}
 
@@ -127,15 +112,15 @@ func main() {
 		renderer.SetDrawColor(100, 100, 100, 255)
 		renderer.FillRect(&rect2)
 
-		rectNormal := &sdl.Rect{
-			X: int32(rect.X),
-			Y: int32(rect.Y),
-			W: int32(rect.W),
-			H: int32(rect.H),
-		}
+		rect_normal := lib.Convert_frect_to_rect(&rect)
 
 		// Draw the image
-		renderer.Copy(texture, nil, rectNormal)
+		renderer.Copy(texture, nil, &rect_normal)
+
+		test_button.Draw_button(renderer) 
+		if test_button.Get_clicked() {
+			logger.Log("clicked " + test_button.Get_name(), logger.INFO)
+		}
 
 		if keys[sdl.SCANCODE_W] {
 			rect.Y -= 0.1
@@ -153,36 +138,4 @@ func main() {
 		// Update the screen
 		renderer.Present()
 	}
-}
-
-func render_pixels(surface *sdl.Surface, rgba [4]int32) uint32 {
-	color := sdl.Color{R: uint8(rgba[0]), G: uint8(rgba[1]), B: uint8(rgba[2]), A: uint8(rgba[3])} // purple
-	pixel := sdl.MapRGBA(surface.Format, color.R, color.G, color.B, color.A)
-	return pixel
-}
-
-func init_sdl() error {
-	err := sdl.Init(sdl.INIT_EVERYTHING)
-	if err != nil {
-		panic(err)
-	}
-	return err
-}
-
-func checkCollision(rect *sdl.Rect, mouseX, mouseY int32) bool {
-	// Check if the mouse position is within the bounding rectangle
-	return mouseX >= rect.X && mouseX <= rect.X+rect.W && mouseY >= rect.Y && mouseY <= rect.Y+rect.H
-}
-
-func checkMouseClick() (leftClick, rightClick bool) {
-	// Get the current state of the mouse buttons
-	_, _, mouseState := sdl.GetMouseState()
-
-	// Check if the left mouse button is clicked
-	leftClick = mouseState&sdl.ButtonLMask() != 0
-
-	// Check if the right mouse button is clicked
-	rightClick = mouseState&sdl.ButtonRMask() != 0
-
-	return leftClick, rightClick
 }

@@ -3,7 +3,6 @@ package lib
 import (
 	"embed"
 	"strings"
-	"fmt"
 
 	"go_outside/lib/logger"
 
@@ -11,20 +10,20 @@ import (
 	"github.com/veandco/go-sdl2/sdl"
 )
 
-func Load_image(filepath string, renderer *sdl.Renderer, assets embed.FS) (*sdl.Texture, error) {
+func Load_image(filepath string, renderer *sdl.Renderer, assets embed.FS) *sdl.Texture {
 	
 	// Failed to read file
-	imageData, err := assets.ReadFile(filepath)
+	imageData, err := assets.ReadFile(filepath + ".png")
 	if err != nil {
 		logger.Log("Failed to load image: " + err.Error(), logger.ERROR)
-		return nil, fmt.Errorf("could not load image: %v", err)
+		return nil
 	}
 
 	// Convert file to bytes
 	rwops, err := sdl.RWFromMem(imageData)
 	if err != nil {
 		logger.Log("Failed to load image: " + sdl.GetError().Error(), logger.ERROR)
-		return nil, fmt.Errorf("Failed to convert img to bytes: %v", err)
+		return nil
 	}
 	defer rwops.Close()
 
@@ -32,7 +31,7 @@ func Load_image(filepath string, renderer *sdl.Renderer, assets embed.FS) (*sdl.
 	surface_raw, err := img.LoadPNGRW(rwops)
 	if err != nil {
 		logger.Log("Failed to load texture from raw: " + err.Error(), logger.ERROR)
-		return nil, fmt.Errorf("Failed to load texture from raw: %v", err)
+		return nil
 	}
 	defer surface_raw.Free()
 
@@ -40,12 +39,84 @@ func Load_image(filepath string, renderer *sdl.Renderer, assets embed.FS) (*sdl.
 	texture, err := renderer.CreateTextureFromSurface(surface_raw)
 	if err != nil {
 		logger.Log("Could not create texture: " + err.Error(), logger.ERROR)
-		return nil, fmt.Errorf("could not create texture: %v", err)
+		return nil
 	}
 
 	trimmed_path := strings.Split(filepath, "/")
 
 	logger.Log("successfully loaded texture: "+ trimmed_path[len(trimmed_path)-1], logger.SUCCESS)
 	
-	return texture, nil
+	return texture
+}
+
+func Render_pixels(surface *sdl.Surface, rgba [4]int32) uint32 {
+	color := sdl.Color{R: uint8(rgba[0]), G: uint8(rgba[1]), B: uint8(rgba[2]), A: uint8(rgba[3])} // purple
+	pixel := sdl.MapRGBA(surface.Format, color.R, color.G, color.B, color.A)
+	return pixel
+}
+
+func Init_sdl() error {
+	err := sdl.Init(sdl.INIT_EVERYTHING)
+	if err != nil {
+		panic(err)
+	}
+	return err
+}
+
+func Collide_point(rect *sdl.Rect, X, Y int32) bool {
+	// Check if the mouse position is within the bounding rectangle
+	return X >= rect.X && X <= rect.X+rect.W && Y >= rect.Y && Y <= rect.Y+rect.H
+}
+
+func Mouse_clicked() (leftClick, rightClick bool) {
+	// Get the current state of the mouse buttons
+	_, _, mouseState := sdl.GetMouseState()
+
+	// Check if the left mouse button is clicked
+	leftClick = mouseState&sdl.ButtonLMask() != 0
+
+	// Check if the right mouse button is clicked
+	rightClick = mouseState&sdl.ButtonRMask() != 0
+
+	return leftClick, rightClick
+}
+
+func Create_window(width int32, height int32, allowResize bool) *sdl.Window {
+	window, err := sdl.CreateWindow("test", sdl.WINDOWPOS_UNDEFINED, sdl.WINDOWPOS_UNDEFINED,
+		width, height, sdl.WINDOW_SHOWN)
+	if err != nil {
+		panic(err)
+	}
+	if allowResize {
+		window.SetResizable(true)
+	} else {
+		window.SetResizable(false)
+	}
+	return window
+}
+
+func Create_renderer(window *sdl.Window) *sdl.Renderer {
+	renderer, err := sdl.CreateRenderer(window, -1, sdl.RENDERER_ACCELERATED)
+	if err != nil {
+		logger.Log("Failed to create Renderer: "+err.Error(), logger.ERROR)
+	}
+	return renderer
+}
+
+func Create_surface_from_window(window *sdl.Window) *sdl.Surface {
+	surface, err := window.GetSurface()
+	if err != nil {
+		logger.Log("Failed to create Surface: "+sdl.GetError().Error(), logger.ERROR)
+	}
+	return surface
+}
+
+func Convert_frect_to_rect(frect *sdl.FRect) sdl.Rect {
+	rect := &sdl.Rect{
+		X: int32(frect.X),
+		Y: int32(frect.Y),
+		W: int32(frect.W),
+		H: int32(frect.H),
+	}
+	return *rect
 }
