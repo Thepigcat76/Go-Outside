@@ -8,7 +8,9 @@ A 2d game written in go and sdl2
 - execute main.go
 
 For help:
+
 - https://www.youtube.com/watch?v=yxK_dwJ3Bbc
+
 - https://github.com/veandco/go-sdl2#installation
 
 ## Discord
