@@ -13,7 +13,10 @@ import (
 //go:embed assets
 var assets embed.FS
 
+const escapeCooldown = 500
+
 func main() {
+
 	util.Init_sdl()
 	defer sdl.Quit()
 
@@ -31,8 +34,7 @@ func main() {
 	keys := make([]bool, sdl.NUM_SCANCODES)
 
 	test_button := gui.Create_button("test_button", "assets/textures/test_button", renderer, assets, 200, 200, 100, 100)
-
-	test_button_timer := util.Create_timer()
+	test_button.Visible = false
 
 	running := true
 	logger.Log("Started successfully", logger.SUCCESS)
@@ -46,11 +48,6 @@ func main() {
 			case *sdl.KeyboardEvent:
 				key_event := event.(*sdl.KeyboardEvent)
 				key_pressed := key_event.Keysym.Scancode
-				// Check if player pressed escape to exit
-				if key_pressed == sdl.SCANCODE_COMMA {
-					logger.Log("Requested Exit", logger.WARNING)
-					running = false
-				}
 
 				// Check for keybinds that are initialized
 				// after the event loop
@@ -60,6 +57,11 @@ func main() {
 				} else if key_event.Type == sdl.KEYUP {
 					// Set the corresponding key state to false when a key is released
 					keys[key_event.Keysym.Scancode] = false
+
+					// Check if escape key was pressed
+					if key_pressed == sdl.SCANCODE_ESCAPE {
+						test_button.Visible = !test_button.Visible
+					}
 				}
 			case *sdl.MouseButtonEvent:
 				// Check if it's a mouse button down event
@@ -75,7 +77,6 @@ func main() {
 			}
 
 		}
-
 		// Clear the renderer
 		renderer.SetDrawColor(255, 0, 0, 255)
 		renderer.Clear()
@@ -86,14 +87,10 @@ func main() {
 		renderer.Copy(texture, nil, &rect_normal)
 
 		if test_button.Clicked {
-			test_button_timer.Start()
+			logger.Log("Requested Exit", logger.WARNING)
+			running = false
+			break
 		}
-		if test_button.Clicked && test_button_timer.Time > 50 {
-			test_button_timer.Reset()
-		}
-
-		println(test_button_timer.Time)
-		println(test_button_timer.Reset_time)
 
 		if keys[sdl.SCANCODE_W] {
 			rect.Y -= 0.1
@@ -109,8 +106,6 @@ func main() {
 		}
 
 		test_button.Draw_button(renderer)
-
-		test_button_timer.Run()
 
 		// Update the screen
 		renderer.Present()
