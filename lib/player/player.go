@@ -27,5 +27,6 @@ func Create(textures [4]string, renderer *sdl.Renderer, assets embed.FS, scale, 
 }
 
 func (p *Player) Draw() {
+	p.Texture.X, p.Texture.Y = p.X, p.Y
 	p.Texture.Draw_image()
 }

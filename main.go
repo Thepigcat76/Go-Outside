@@ -111,7 +111,7 @@ func main() {
 		texture.Draw_image()
 
 		if keys[sdl.SCANCODE_W] {
-			texture.Y -= 0.1
+			player.Y -= 0.1
 		}
 		if keys[sdl.SCANCODE_S] {
 			texture.Y += 0.1
