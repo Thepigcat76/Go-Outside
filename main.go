@@ -3,6 +3,7 @@ package main
 import (
 	"go_outside/lib/gui"
 	"go_outside/lib/logger"
+	// "go_outside/lib/player"
 	"go_outside/lib/util"
 
 	"embed"
@@ -26,8 +27,9 @@ func main() {
 	renderer := util.Create_renderer(window)
 	defer renderer.Destroy()
 
-	texture := util.Load_image("assets/textures/player", renderer, assets)
-	defer texture.Destroy()
+	texture := util.Load_image("assets/textures/player", renderer, assets, 10)
+
+	// player := player.Create_player()
 
 	rect := sdl.FRect{X: 0, Y: 0, W: 80, H: 120}
 
@@ -81,10 +83,8 @@ func main() {
 		renderer.SetDrawColor(255, 0, 0, 255)
 		renderer.Clear()
 
-		rect_normal := util.Convert_frect_to_rect(&rect)
-
 		// Draw the image
-		renderer.Copy(texture, nil, &rect_normal)
+		texture.Draw_image(renderer, 0, 0)
 
 		if test_button.Clicked {
 			logger.Log("Requested Exit", logger.WARNING)

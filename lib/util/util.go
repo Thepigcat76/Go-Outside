@@ -1,53 +1,9 @@
 package util
 
 import (
-	"embed"
-	"strings"
-
 	"go_outside/lib/logger"
-
-	"github.com/veandco/go-sdl2/img"
 	"github.com/veandco/go-sdl2/sdl"
 )
-
-func Load_image(filepath string, renderer *sdl.Renderer, assets embed.FS) *sdl.Texture {
-
-	// Failed to read file
-	imageData, err := assets.ReadFile(filepath + ".png")
-	if err != nil {
-		logger.Log("Failed to load image: "+err.Error(), logger.ERROR)
-		return nil
-	}
-
-	// Convert file to bytes
-	rwops, err := sdl.RWFromMem(imageData)
-	if err != nil {
-		logger.Log("Failed to load image: "+sdl.GetError().Error(), logger.ERROR)
-		return nil
-	}
-	defer rwops.Close()
-
-	// Load from memory
-	surface_raw, err := img.LoadPNGRW(rwops)
-	if err != nil {
-		logger.Log("Failed to load texture from raw: "+err.Error(), logger.ERROR)
-		return nil
-	}
-	defer surface_raw.Free()
-
-	// Create the texture
-	texture, err := renderer.CreateTextureFromSurface(surface_raw)
-	if err != nil {
-		logger.Log("Could not create texture: "+err.Error(), logger.ERROR)
-		return nil
-	}
-
-	trimmed_path := strings.Split(filepath, "/")
-
-	logger.Log("successfully loaded texture: "+trimmed_path[len(trimmed_path)-1], logger.SUCCESS)
-
-	return texture
-}
 
 func Render_pixels(surface *sdl.Surface, rgba [4]int32) uint32 {
 	color := sdl.Color{R: uint8(rgba[0]), G: uint8(rgba[1]), B: uint8(rgba[2]), A: uint8(rgba[3])} // purple

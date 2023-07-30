@@ -18,11 +18,11 @@ type Button struct {
 }
 
 func Create_button(name string, texturePath string, renderer *sdl.Renderer, assets embed.FS, X, Y, W, H int32) Button {
-	texture_std := util.Load_image(texturePath, renderer, assets)
-	texture_sel := util.Load_image(texturePath + "_selected", renderer, assets)
+	texture_std := util.Load_image(texturePath, renderer, assets, 1)
+	texture_sel := util.Load_image(texturePath + "_selected", renderer, assets, 1)
 	button_rect := sdl.Rect{X: X, Y: Y, W: W, H: H}
 
-	return Button{Name: name, Clicked: false, Visible: true, texture_std: texture_std, texture_sel: texture_sel, button_rect: &button_rect}
+	return Button{Name: name, Clicked: false, Visible: true, texture_std: texture_std.Texture, texture_sel: texture_sel.Texture, button_rect: &button_rect}
 }
 
 func (b *Button) Draw_button(renderer *sdl.Renderer) {
