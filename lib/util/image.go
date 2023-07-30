@@ -18,14 +18,14 @@ import (
 
 type Image struct {
 	Image_rect *sdl.FRect
-	Texture *sdl.Texture
-	X float32
-	Y float32
+	Texture    *sdl.Texture
+	renderer   *sdl.Renderer
+	X, Y       float32
 }
 
 func Load_image(filepath string, renderer *sdl.Renderer, assets embed.FS, scale float32) Image {
 
-	error_image := Image{Image_rect: nil, Texture: nil, X: 0, Y: 0}
+	error_image := Image{Image_rect: nil, Texture: nil, renderer: nil}
 
 	// Failed to read file
 	imageData, err := assets.ReadFile(filepath + ".png")
@@ -63,12 +63,11 @@ func Load_image(filepath string, renderer *sdl.Renderer, assets embed.FS, scale 
 
 	logger.Log("successfully loaded texture: "+trimmed_path[len(trimmed_path)-1], logger.SUCCESS)
 
-	return Image{Texture: texture, Image_rect: &image_rect, X: image_rect.X, Y: image_rect.Y}
+	return Image{Texture: texture, Image_rect: &image_rect, renderer: renderer}
 }
 
-func (i Image) Draw_image(renderer *sdl.Renderer, x, y float32) {
-	i.Image_rect.X, i.Image_rect.Y = float32(i.X), float32(i.Y)
-	i.X, i.Y = x, y
-	texture_rect := sdl.Rect{X: int32(i.X), Y: int32(i.X), W: int32(i.Image_rect.W), H: int32(i.Image_rect.H)}
-	renderer.Copy(i.Texture, nil, &texture_rect)
+func (i Image) Draw_image() {
+	i.Image_rect.X, i.Image_rect.Y = i.X, i.Y
+	texture_rect := sdl.Rect{X: int32(i.Image_rect.X), Y: int32(i.Image_rect.Y), W: int32(i.Image_rect.W), H: int32(i.Image_rect.H)}
+	i.renderer.Copy(i.Texture, nil, &texture_rect)
 }

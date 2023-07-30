@@ -8,18 +8,24 @@ import (
 )
 
 type Player struct {
-	Looking_right    bool
-	Looking_left     bool
 	Looking_forward  bool
 	Looking_backward bool
+	Looking_right    bool
+	Looking_left     bool
 
-	texture  *util.Image
-	hit_box  *sdl.FRect
+	Texture   *util.Image
 	inventory *Inventory
+	renderer  *sdl.Renderer
+
+	X, Y float32
 }
 
-func Create(texture_path string, renderer *sdl.Renderer, assets embed.FS, scale, x, y float32) Player {
-	texture := util.Load_image(texture_path, renderer, assets, 5.0)
-	hit_box := sdl.FRect{}
-	return Player{Looking_forward: true, texture: &texture, hit_box: &hit_box, inventory: nil}
+// textures: forward = 0, backward = 1, right = 2, left = 3
+func Create(textures [4]string, renderer *sdl.Renderer, assets embed.FS, scale, x, y float32) Player {
+	texture := util.Load_image(textures[0], renderer, assets, scale)
+	return Player{Looking_forward: true, Texture: &texture, inventory: nil, renderer: renderer, X: x, Y: y}
+}
+
+func (p *Player) Draw() {
+	p.Texture.Draw_image()
 }

@@ -3,7 +3,7 @@ package main
 import (
 	"go_outside/lib/gui"
 	"go_outside/lib/logger"
-	// "go_outside/lib/player"
+	"go_outside/lib/player"
 	"go_outside/lib/util"
 
 	"embed"
@@ -27,11 +27,7 @@ func main() {
 	renderer := util.Create_renderer(window)
 	defer renderer.Destroy()
 
-	texture := util.Load_image("assets/textures/player", renderer, assets, 10)
-
-	// player := player.Create_player()
-
-	rect := sdl.FRect{X: 0, Y: 0, W: 80, H: 120}
+	player := player.Create([4]string{"assets/textures/player"}, renderer, assets, 5.0, 200, 200)
 
 	keys := make([]bool, sdl.NUM_SCANCODES)
 
@@ -42,6 +38,8 @@ func main() {
 	options_button := gui.Create_button("options_button", "assets/textures/options_button", renderer, assets, 400, 200, 100, 100, false)
 
 	continue_button := gui.Create_button("continue_button", "assets/textures/continue_button", renderer, assets, 200, 200, 100, 100, false)
+
+	texture := util.Load_image("assets/textures/infinity_sword", renderer, assets, 5.0)
 
 	buttons := [3]gui.Button{quit_button, options_button, continue_button}
 
@@ -93,9 +91,6 @@ func main() {
 		renderer.SetDrawColor(255, 0, 0, 255)
 		renderer.Clear()
 
-		// Draw the image
-		texture.Draw_image(renderer, 0, 0)
-
 		if show_escape_menu {
 			quit_button.Visible = true
 			options_button.Visible = true
@@ -112,17 +107,20 @@ func main() {
 			break
 		}
 
+		player.Draw()
+		texture.Draw_image()
+
 		if keys[sdl.SCANCODE_W] {
-			rect.Y -= 0.1
+			texture.Y -= 0.1
 		}
 		if keys[sdl.SCANCODE_S] {
-			rect.Y += 0.1
+			texture.Y += 0.1
 		}
 		if keys[sdl.SCANCODE_A] {
-			rect.X -= 0.1
+			texture.X -= 0.1
 		}
 		if keys[sdl.SCANCODE_D] {
-			rect.X += 0.1
+			texture.X += 0.1
 		}
 
 		handle_button_pos(buttons[:], surface)
@@ -141,5 +139,4 @@ func handle_button_pos(buttons []gui.Button, surface *sdl.Surface) {
 		buttons[i].Button_rect.X = surface.W / 3
 		buttons[i].Button_rect.X += int32(i * 200)
     }
-	println(surface.W)
 }
