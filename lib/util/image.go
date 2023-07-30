@@ -66,7 +66,7 @@ func Load_image(filepath string, renderer *sdl.Renderer, assets embed.FS, scale 
 	return Image{Texture: texture, Image_rect: &image_rect, X: image_rect.X, Y: image_rect.Y}
 }
 
-func (i Image) Draw_image(renderer *sdl.Renderer, x float32, y float32) {
+func (i Image) Draw_image(renderer *sdl.Renderer, x, y float32) {
 	i.Image_rect.X, i.Image_rect.Y = float32(i.X), float32(i.Y)
 	i.X, i.Y = x, y
 	texture_rect := sdl.Rect{X: int32(i.X), Y: int32(i.X), W: int32(i.Image_rect.W), H: int32(i.Image_rect.H)}
