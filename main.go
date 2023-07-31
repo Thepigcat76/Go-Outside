@@ -134,7 +134,3 @@ func main() {
 		renderer.Present()
 	}
 }
-
-func handle_button_pos(quit_button, options_button, continue_button, surface *sdl.Surface) {
-
-}
