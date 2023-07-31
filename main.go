@@ -31,8 +31,6 @@ func main() {
 
 	keys := make([]bool, sdl.NUM_SCANCODES)
 
-	show_escape_menu := false
-
 	quit_button := gui.Create_button("quit_button", "assets/textures/quit_button", renderer, assets, 600, 200, 100, 100, false)
 
 	options_button := gui.Create_button("options_button", "assets/textures/options_button", renderer, assets, 400, 200, 100, 100, false)
@@ -40,8 +38,6 @@ func main() {
 	continue_button := gui.Create_button("continue_button", "assets/textures/continue_button", renderer, assets, 200, 200, 100, 100, false)
 
 	texture := util.Load_image("assets/textures/infinity_sword", renderer, assets, 5.0)
-
-	buttons := [3]gui.Button{quit_button, options_button, continue_button}
 
 	running := true
 	logger.Log("Started successfully", logger.SUCCESS)
@@ -67,7 +63,9 @@ func main() {
 
 					// Check if escape key was pressed
 					if key_pressed == sdl.SCANCODE_ESCAPE {
-						show_escape_menu = !show_escape_menu
+						quit_button.Visible = !quit_button.Visible
+						options_button.Visible = !options_button.Visible
+						continue_button.Visible = !continue_button.Visible
 					}
 				}
 			case *sdl.MouseButtonEvent:
@@ -81,6 +79,15 @@ func main() {
 					if mouse_event.Button == sdl.BUTTON_RIGHT {
 					}
 				}
+				if mouse_event.Type == sdl.MOUSEBUTTONUP {
+					if mouse_event.Button == sdl.BUTTON_LEFT {
+						if continue_button.Collide_mouse() {
+							quit_button.Visible = false
+							options_button.Visible = false
+							continue_button.Visible = false
+						}
+					}
+				}
 			}
 
 		}
@@ -91,15 +98,6 @@ func main() {
 		renderer.SetDrawColor(255, 0, 0, 255)
 		renderer.Clear()
 
-		if show_escape_menu {
-			quit_button.Visible = true
-			options_button.Visible = true
-			continue_button.Visible = true
-		} else {
-			quit_button.Visible = false
-			options_button.Visible = false
-			continue_button.Visible = false
-		}
 
 		if quit_button.Clicked {
 			logger.Log("Requested Exit", logger.WARNING)
@@ -109,6 +107,7 @@ func main() {
 
 		player.Draw()
 		texture.Draw_image()
+		texture.X = 266
 
 		if keys[sdl.SCANCODE_W] {
 			player.Y -= 0.1
@@ -123,20 +122,19 @@ func main() {
 			texture.X += 0.1
 		}
 
-		handle_button_pos(buttons[:], surface)
-
 		quit_button.Draw_button(renderer)
 		options_button.Draw_button(renderer)
 		continue_button.Draw_button(renderer)
+
+		continue_button.X = surface.W / 5
+		options_button.X = surface.W / 5 + surface.W / 4
+		quit_button.X = surface.W / 5 + surface.W / 2
 
 		// Update the screen
 		renderer.Present()
 	}
 }
 
-func handle_button_pos(buttons []gui.Button, surface *sdl.Surface) {
-    for i := 0; i < len(buttons); i++ {
-		buttons[i].Button_rect.X = surface.W / 3
-		buttons[i].Button_rect.X += int32(i * 200)
-    }
+func handle_button_pos(quit_button, options_button, continue_button, surface *sdl.Surface) {
+
 }
