@@ -2,6 +2,7 @@ package main
 
 import (
 	"go_outside/lib/gui"
+	"go_outside/lib/inventory"
 	"go_outside/lib/logger"
 	"go_outside/lib/player"
 	"go_outside/lib/util"
@@ -38,6 +39,8 @@ func main() {
 	continue_button := gui.Create_button("continue_button", "assets/textures/continue_button", renderer, assets, 200, 200, 100, 100, false)
 
 	texture := util.Load_image("assets/textures/infinity_sword", renderer, assets, 5.0)
+
+	inventory := inventory.Init_inventory(renderer, assets)
 
 	running := true
 	logger.Log("Started successfully", logger.SUCCESS)
@@ -113,22 +116,28 @@ func main() {
 			player.Y -= 0.1
 		}
 		if keys[sdl.SCANCODE_S] {
-			texture.Y += 0.1
+			player.Y += 0.1
 		}
 		if keys[sdl.SCANCODE_A] {
-			texture.X -= 0.1
+			player.X -= 0.1
 		}
 		if keys[sdl.SCANCODE_D] {
-			texture.X += 0.1
+			player.X += 0.1
 		}
 
 		quit_button.Draw_button(renderer)
 		options_button.Draw_button(renderer)
 		continue_button.Draw_button(renderer)
 
+		inventory.Draw_Inventory(0, 100)
+
 		continue_button.X = surface.W / 5
 		options_button.X = surface.W / 5 + surface.W / 4
 		quit_button.X = surface.W / 5 + surface.W / 2
+
+		continue_button.Y = surface.H / 3
+		options_button.Y = surface.H / 3
+		quit_button.Y = surface.H / 3
 
 		// Update the screen
 		renderer.Present()

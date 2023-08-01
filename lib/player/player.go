@@ -2,6 +2,7 @@ package player
 
 import (
 	"embed"
+	"go_outside/lib/inventory"
 	"go_outside/lib/util"
 
 	"github.com/veandco/go-sdl2/sdl"
@@ -14,7 +15,7 @@ type Player struct {
 	Looking_left     bool
 
 	Texture   *util.Image
-	inventory *Inventory
+	inventory *inventory.Inventory
 	renderer  *sdl.Renderer
 
 	X, Y float32

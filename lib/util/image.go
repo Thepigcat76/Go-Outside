@@ -63,7 +63,7 @@ func Load_image(filepath string, renderer *sdl.Renderer, assets embed.FS, scale 
 
 	logger.Log("successfully loaded texture: "+trimmed_path[len(trimmed_path)-1], logger.SUCCESS)
 
-	return Image{Texture: texture, Image_rect: &image_rect, renderer: renderer}
+	return Image{Texture: texture, Image_rect: &image_rect, renderer: renderer, X: 0, Y: 0}
 }
 
 func (i Image) Draw_image() {
