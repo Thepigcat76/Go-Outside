@@ -28,14 +28,14 @@ func Load_image(filepath string, renderer *sdl.Renderer, assets embed.FS, scale 
 	error_image := Image{Image_rect: nil, Texture: nil, renderer: nil}
 
 	// Failed to read file
-	imageData, err := assets.ReadFile(filepath + ".png")
+	image_data, err := assets.ReadFile(filepath + ".png")
 	if err != nil {
 		logger.Log("Failed to load image: "+err.Error(), logger.ERROR)
 		return error_image
 	}
 
 	// Convert file to bytes
-	rwops, err := sdl.RWFromMem(imageData)
+	rwops, err := sdl.RWFromMem(image_data)
 	if err != nil {
 		logger.Log("Failed to load image: "+sdl.GetError().Error(), logger.ERROR)
 		return error_image
