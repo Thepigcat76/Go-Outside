@@ -8,7 +8,7 @@ import (
 	"github.com/veandco/go-sdl2/sdl"
 )
 
-type Slot struct {
+type Slot struct { 
 	slot_content  *item.Item
 	content_count int32
 }

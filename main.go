@@ -3,6 +3,7 @@ package main
 import (
 	"go_outside/lib/gui"
 	"go_outside/lib/inventory"
+	"go_outside/lib/item"
 	"go_outside/lib/logger"
 	"go_outside/lib/player"
 	"go_outside/lib/util"
@@ -27,6 +28,14 @@ func main() {
 
 	renderer := util.Create_renderer(window)
 	defer renderer.Destroy()
+
+	items := item.Init_items(renderer, assets)
+
+	items.New("test_sword", item.COMMON)
+
+	items.New("test_item_2", item.RARE)
+
+	items.Render()
 
 	player := player.Create([4]string{"assets/textures/player"}, renderer, assets, 5.0, 200, 200)
 
@@ -96,11 +105,10 @@ func main() {
 		}
 
 		surface := util.Create_surface_from_window(window)
-		
+
 		// Clear the renderer
 		renderer.SetDrawColor(255, 0, 0, 255)
 		renderer.Clear()
-
 
 		if quit_button.Clicked {
 			logger.Log("Requested Exit", logger.WARNING)
@@ -132,8 +140,8 @@ func main() {
 		inventory.Draw_Inventory(0, 100)
 
 		continue_button.X = surface.W / 5
-		options_button.X = surface.W / 5 + surface.W / 4
-		quit_button.X = surface.W / 5 + surface.W / 2
+		options_button.X = surface.W/5 + surface.W/4
+		quit_button.X = surface.W/5 + surface.W/2
 
 		continue_button.Y = surface.H / 3
 		options_button.Y = surface.H / 3
