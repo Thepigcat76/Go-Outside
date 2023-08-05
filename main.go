@@ -20,6 +20,7 @@ var assets embed.FS
 const escapeCooldown = 500
 
 func main() {
+	font_path := "assets/fonts/FFFFORWA.TTF"
 
 	util.Init_sdl()
 	defer sdl.Quit()
@@ -31,12 +32,12 @@ func main() {
 	renderer := util.Create_renderer(window)
 	defer renderer.Destroy()
 
-	font := util.Load_font("assets/fonts/FFFFORWA.TTF", 24, "Amogus", &sdl.Color{R: 255, G: 255, B: 255}, 100, 100, renderer, assets)
+	font := util.Load_font(font_path, 12, "Amogus", &sdl.Color{R: 255, G: 255, B: 255}, renderer, assets)
 	defer font.Surface.Free()
 	defer font.Texture.Destroy()
 	defer font.Font.Close()
 
-	items := item.Init_items(renderer, assets)
+	items := item.Init_items(renderer, assets, font_path)
 
 	test_sword := items.New("test_sword", item.COMMON)
 
@@ -124,7 +125,6 @@ func main() {
 			break
 		}
 
-		player.Draw()
 		texture.Draw_image()
 		texture.X = 266
 
@@ -147,9 +147,11 @@ func main() {
 
 		test_sword.Draw_single()
 
+		player.Draw()
+
 		inventory.Draw(0, 100)
 
-		font.Draw()
+		font.Draw(200, 100)
 
 		// TODO: put this in method
 		continue_button.X = surface.W / 5

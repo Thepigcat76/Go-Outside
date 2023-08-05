@@ -16,7 +16,7 @@ type Font struct {
 	Rect     *sdl.FRect
 }
 
-func Load_font(font_path string, font_size int32, text string, text_color *sdl.Color, x float32, y float32, renderer *sdl.Renderer, assets embed.FS) Font {
+func Load_font(font_path string, font_size int32, text string, text_color *sdl.Color, renderer *sdl.Renderer, assets embed.FS) Font {
 	error_font := Font{renderer: nil, Texture: nil, Surface: nil, Font: nil}
 
 	// Failed to read file
@@ -43,7 +43,7 @@ func Load_font(font_path string, font_size int32, text string, text_color *sdl.C
 		logger.Log("Failed to render text: "+err.Error(), logger.ERROR)
 	}
 
-	font_rect := sdl.FRect{X: x, Y: y, W: float32(surface.W), H: float32(surface.H)}
+	font_rect := sdl.FRect{W: float32(surface.W), H: float32(surface.H)}
 
 	texture, err := renderer.CreateTextureFromSurface(surface)
 	if err != nil {
@@ -52,7 +52,7 @@ func Load_font(font_path string, font_size int32, text string, text_color *sdl.C
 	return Font{Font: font, renderer: renderer, Texture: texture, Surface: surface, Rect: &font_rect}
 }
 
-func (f *Font) Draw() {
-	texture_rect := sdl.Rect{X: int32(f.Rect.X), Y: int32(f.Rect.Y), W: int32(f.Rect.W), H: int32(f.Rect.H)}
+func (f *Font) Draw(x float32, y float32) {
+	texture_rect := sdl.Rect{X: int32(x), Y: int32(y), W: int32(f.Rect.W), H: int32(f.Rect.H)}
 	f.renderer.Copy(f.Texture, nil, &texture_rect)
 }
