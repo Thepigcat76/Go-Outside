@@ -43,7 +43,6 @@ func (b *Button) Draw_button(renderer *sdl.Renderer) {
 			} else {
 				b.Clicked = false
 			}
-			println(b.Clicked)
 		} else {
 			renderer.Copy(b.texture_std, nil, b.Button_rect)
 		}

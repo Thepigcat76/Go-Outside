@@ -2,7 +2,9 @@ package util
 
 import (
 	"go_outside/lib/logger"
+
 	"github.com/veandco/go-sdl2/sdl"
+	"github.com/veandco/go-sdl2/ttf"
 )
 
 func Render_pixels(surface *sdl.Surface, rgba [4]int32) uint32 {
@@ -14,8 +16,12 @@ func Render_pixels(surface *sdl.Surface, rgba [4]int32) uint32 {
 func Init_sdl() error {
 	err := sdl.Init(sdl.INIT_EVERYTHING)
 	if err != nil {
-		panic(err)
+		logger.Log(err.Error(), logger.ERROR)
 	}
+	if err := ttf.Init(); err != nil {
+		logger.Log(err.Error(), logger.ERROR)
+	}
+
 	return err
 }
 
@@ -76,6 +82,8 @@ func Convert_frect_to_rect(frect *sdl.FRect) sdl.Rect {
 	}
 	return *rect
 }
+
+// Timer shenanigans
 
 type Timer struct {
 	Time       int32

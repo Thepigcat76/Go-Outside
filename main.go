@@ -11,6 +11,7 @@ import (
 	"embed"
 
 	"github.com/veandco/go-sdl2/sdl"
+	"github.com/veandco/go-sdl2/ttf"
 )
 
 //go:embed assets
@@ -22,6 +23,7 @@ func main() {
 
 	util.Init_sdl()
 	defer sdl.Quit()
+	defer ttf.Quit()
 
 	window := util.Create_window(800, 600, true)
 	defer window.Destroy()
@@ -29,13 +31,18 @@ func main() {
 	renderer := util.Create_renderer(window)
 	defer renderer.Destroy()
 
+	font := util.Load_font("assets/fonts/FFFFORWA.TTF", 24, renderer)
+	defer font.Surface.Free()
+	defer font.Texture.Destroy()
+	defer font.Font.Close()
+
 	items := item.Init_items(renderer, assets)
 
-	items.New("test_sword", item.COMMON)
+	test_sword := items.New("test_sword", item.COMMON)
 
 	items.New("test_item_2", item.RARE)
 
-	items.Render()
+	items.Draw()
 
 	player := player.Create([4]string{"assets/textures/player"}, renderer, assets, 5.0, 200, 200)
 
@@ -52,6 +59,7 @@ func main() {
 	inventory := inventory.Init_inventory(renderer, assets)
 
 	running := true
+
 	logger.Log("Started successfully", logger.SUCCESS)
 	for running {
 		for event := sdl.PollEvent(); event != nil; event = sdl.PollEvent() {
@@ -137,8 +145,13 @@ func main() {
 		options_button.Draw_button(renderer)
 		continue_button.Draw_button(renderer)
 
-		inventory.Draw_Inventory(0, 100)
+		test_sword.Draw_single()
 
+		inventory.Draw(0, 100)
+
+		font.Draw()
+
+		// TODO: put this in method
 		continue_button.X = surface.W / 5
 		options_button.X = surface.W/5 + surface.W/4
 		quit_button.X = surface.W/5 + surface.W/2

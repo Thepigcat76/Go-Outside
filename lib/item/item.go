@@ -38,9 +38,13 @@ func (i *Items) New(name string, rarity int32) *Item {
 
 // renders all items registered in the
 // the Items struct
-func (i *Items) Render() {
+func (i *Items) Draw() {
 	for _, item := range i.registered {
 		println(item.Name)
 	}
 
+}
+
+func (i *Item) Draw_single() {
+	i.Texture.Draw_image()
 }
