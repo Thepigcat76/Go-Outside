@@ -31,7 +31,7 @@ func main() {
 	renderer := util.Create_renderer(window)
 	defer renderer.Destroy()
 
-	font := util.Load_font("assets/fonts/FFFFORWA.TTF", 24, renderer, assets)
+	font := util.Load_font("assets/fonts/FFFFORWA.TTF", 24, "Amogus", &sdl.Color{R: 255, G: 255, B: 255}, 100, 100, renderer, assets)
 	defer font.Surface.Free()
 	defer font.Texture.Destroy()
 	defer font.Font.Close()
@@ -149,7 +149,7 @@ func main() {
 
 		inventory.Draw(0, 100)
 
-		// font.Draw()
+		font.Draw()
 
 		// TODO: put this in method
 		continue_button.X = surface.W / 5
