@@ -23,6 +23,10 @@ type Inventory struct {
 	Slots      []Slot
 }
 
+func (i *Inventory) Set_item(item item.Item, slot int32) {
+	i.Slots[slot].slot_content = &item
+}
+
 func Init_inventory(renderer *sdl.Renderer, assets embed.FS) *Inventory {
 	slot1, slot2, slot3 := register_slot(), register_slot(), register_slot()
 	slots := []Slot{slot1, slot2, slot3}
@@ -31,9 +35,14 @@ func Init_inventory(renderer *sdl.Renderer, assets embed.FS) *Inventory {
 }
 
 func (i *Inventory) Draw(X, Y float32) {
-	for y := 0; y < int(i.Slot_count); y++ {
-		i.texture.X, i.texture.Y = X, Y
-		i.texture.Y += float32(y) * 80.0
-		i.texture.Draw_image()
-	}
+    for y := 0; y < int(i.Slot_count); y++ {
+        i.texture.X, i.texture.Y = X, Y
+        i.texture.Y += float32(y) * 80.0
+        i.texture.Draw_image(nil, nil)
+
+        slot := &i.Slots[y]
+        if slot.slot_content != nil {
+            slot.slot_content.Draw_single(&i.texture.X, &i.texture.Y)
+        }
+    }
 }

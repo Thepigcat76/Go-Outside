@@ -41,13 +41,13 @@ func main() {
 
 	test_sword := items.New("test_sword", item.COMMON)
 
-	items.New("test_item_2", item.RARE)
+	items.New("copper_gear", item.RARE)
 
 	items.Draw()
 
 	player := player.Create([4]string{"assets/textures/player"}, renderer, assets, 5.0, 200, 200)
 
-	keys := make([]bool, sdl.NUM_SCANCODES)
+	keys_pressed := make([]bool, sdl.NUM_SCANCODES)
 
 	quit_button := gui.Create_button("quit_button", "assets/textures/quit_button", renderer, assets, 600, 200, 100, 100, false)
 
@@ -60,6 +60,7 @@ func main() {
 	inventory := inventory.Init_inventory(renderer, assets)
 
 	running := true
+	var slot int32 = 0
 
 	logger.Log("Started successfully", logger.SUCCESS)
 	for running {
@@ -77,16 +78,20 @@ func main() {
 				// after the event loop
 				if key_event.Type == sdl.KEYDOWN {
 					// Set the corresponding key state to true when a key is pressed
-					keys[key_event.Keysym.Scancode] = true
+					keys_pressed[key_event.Keysym.Scancode] = true
 				} else if key_event.Type == sdl.KEYUP {
 					// Set the corresponding key state to false when a key is released
-					keys[key_event.Keysym.Scancode] = false
+					keys_pressed[key_event.Keysym.Scancode] = false
 
 					// Check if escape key was pressed
 					if key_pressed == sdl.SCANCODE_ESCAPE {
 						quit_button.Visible = !quit_button.Visible
 						options_button.Visible = !options_button.Visible
 						continue_button.Visible = !continue_button.Visible
+					}
+					if key_pressed == sdl.SCANCODE_P {
+						inventory.Set_item(*test_sword, slot)
+						slot += 1
 					}
 				}
 			case *sdl.MouseButtonEvent:
@@ -125,19 +130,19 @@ func main() {
 			break
 		}
 
-		texture.Draw_image()
+		texture.Draw_image(nil, nil)
 		texture.X = 266
 
-		if keys[sdl.SCANCODE_W] {
+		if keys_pressed[sdl.SCANCODE_W] {
 			player.Y -= 0.1
 		}
-		if keys[sdl.SCANCODE_S] {
+		if keys_pressed[sdl.SCANCODE_S] {
 			player.Y += 0.1
 		}
-		if keys[sdl.SCANCODE_A] {
+		if keys_pressed[sdl.SCANCODE_A] {
 			player.X -= 0.1
 		}
-		if keys[sdl.SCANCODE_D] {
+		if keys_pressed[sdl.SCANCODE_D] {
 			player.X += 0.1
 		}
 
@@ -145,7 +150,7 @@ func main() {
 		options_button.Draw_button(renderer)
 		continue_button.Draw_button(renderer)
 
-		test_sword.Draw_single()
+		test_sword.Draw_single(&test_sword.Texture.X, &test_sword.Texture.Y)
 
 		player.Draw()
 

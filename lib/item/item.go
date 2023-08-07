@@ -49,8 +49,8 @@ func (i *Items) Draw() {
 
 }
 
-func (i *Item) Draw_single() {
-	i.Texture.Draw_image()
+func (i *Item) Draw_single(x, y *float32) {
+	i.Texture.Draw_image(x, y)
 	x_pos := i.Texture.X - float32(i.font.Surface.W) / 3.0
 	i.font.Draw(x_pos, i.Texture.Y-20)
 }
