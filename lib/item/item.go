@@ -8,8 +8,8 @@ import (
 )
 
 type Items struct {
-	renderer  *sdl.Renderer
-	assets    embed.FS
+	Renderer  *sdl.Renderer
+	Assets    embed.FS
 	font_path string
 
 	registered []*Item
@@ -24,16 +24,16 @@ type Item struct {
 
 // Initialzies the items registry
 func Init_items(renderer *sdl.Renderer, assets embed.FS, font_path string) *Items {
-	return &Items{renderer: renderer, assets: assets, font_path: font_path}
+	return &Items{Renderer: renderer, Assets: assets, font_path: font_path}
 }
 
 // This is used to register an item
 // you can also use it as a reference
 // to this item by declaring it as a variable
 func (i *Items) New(name string, rarity int32) *Item {
-	texture := util.Load_image("assets/textures/items/"+name, i.renderer, i.assets, 2.0)
+	texture := util.Load_image("assets/textures/items/"+name, i.Renderer, i.Assets, 2.0, true)
 	texture.X, texture.Y = 300, 300
-	font := util.Load_font(i.font_path, 12, name, &sdl.Color{R: 255, G: 255, B: 255}, i.renderer, i.assets)
+	font := util.Load_font(i.font_path, 12, name, &sdl.Color{R: 255, G: 255, B: 255}, i.Renderer, i.Assets)
 
 	item := &Item{Name: name, Rarity: rarity, Texture: &texture, font: font}
 	i.registered = append(i.registered, item)

@@ -55,8 +55,6 @@ func main() {
 
 	continue_button := gui.Create_button("continue_button", "assets/textures/continue_button", renderer, assets, 200, 200, 100, 100, false)
 
-	texture := util.Load_image("assets/textures/infinity_sword", renderer, assets, 5.0)
-
 	inventory := inventory.Init_inventory(renderer, assets)
 
 	running := true
@@ -130,9 +128,6 @@ func main() {
 			break
 		}
 
-		texture.Draw_image(nil, nil)
-		texture.X = 266
-
 		if keys_pressed[sdl.SCANCODE_W] {
 			player.Y -= 0.1
 		}
@@ -154,7 +149,7 @@ func main() {
 
 		player.Draw()
 
-		inventory.Draw(0, 100)
+		inventory.Draw(items, 0, 100)
 
 		font.Draw(200, 100)
 
