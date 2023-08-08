@@ -35,7 +35,7 @@ func (i *Items) New(name string, rarity int32) *Item {
 	texture.X, texture.Y = 300, 300
 	font := util.Load_font(i.font_path, 12, name, &sdl.Color{R: 255, G: 255, B: 255}, i.Renderer, i.Assets)
 
-	item := &Item{Name: name, Rarity: rarity, Texture: &texture, font: font}
+	item := &Item{Name: name, Rarity: rarity, Texture: texture, font: font}
 	i.registered = append(i.registered, item)
 	return item
 }

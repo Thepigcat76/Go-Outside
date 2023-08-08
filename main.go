@@ -37,6 +37,19 @@ func main() {
 	defer font.Texture.Destroy()
 	defer font.Font.Close()
 
+	world, err := sdl.CreateRGBSurface(0, 800, 600, 32, 0, 0, 0, 0)
+	if err != nil {
+		// Handle error
+		panic(err)
+	}
+	defer world.Free()
+
+	world_texture, err := renderer.CreateTextureFromSurface(world)
+	if err != nil {
+		// Handle error
+		panic(err)
+	}
+
 	items := item.Init_items(renderer, assets, font_path)
 
 	test_sword := items.New("test_sword", item.COMMON)
@@ -57,8 +70,13 @@ func main() {
 
 	inventory := inventory.Init_inventory(renderer, assets)
 
+	test_texture := util.Load_image("assets/textures/button_template_selected", renderer, assets, 4, true)
+
 	running := true
 	var slot int32 = 0
+	test_rect := sdl.Rect{X: 100, Y: 100, W: 1000, H: 1000}
+
+	// destRect := sdl.FRect{X: 100, Y: 200, W: float32(world.W), H: float32(world.H)}
 
 	logger.Log("Started successfully", logger.SUCCESS)
 	for running {
@@ -128,22 +146,31 @@ func main() {
 			break
 		}
 
+
 		if keys_pressed[sdl.SCANCODE_W] {
-			player.Y -= 0.1
+			test_rect.Y -= 1
 		}
 		if keys_pressed[sdl.SCANCODE_S] {
-			player.Y += 0.1
+			test_rect.Y += 1
 		}
 		if keys_pressed[sdl.SCANCODE_A] {
-			player.X -= 0.1
+			test_rect.X -= 1
 		}
 		if keys_pressed[sdl.SCANCODE_D] {
-			player.X += 0.1
+			test_rect.X += 1
 		}
 
-		quit_button.Draw_button(renderer)
-		options_button.Draw_button(renderer)
-		continue_button.Draw_button(renderer)
+		renderer.Copy(world_texture, nil, &test_rect)
+
+		renderer.SetRenderTarget(world_texture)
+
+		for y := 0; y < 30; y++{
+			for x := 0; x < 2; x++ {
+				renderer.Copy(test_texture.Texture, nil, &test_rect)
+			}
+		}
+
+		world.FillRect(nil, sdl.MapRGB(surface.Format, 0, 0, 0))
 
 		test_sword.Draw_single(&test_sword.Texture.X, &test_sword.Texture.Y)
 
@@ -152,6 +179,10 @@ func main() {
 		inventory.Draw(items, 0, 100)
 
 		font.Draw(200, 100)
+
+		quit_button.Draw_button(renderer)
+		options_button.Draw_button(renderer)
+		continue_button.Draw_button(renderer)
 
 		// TODO: put this in method
 		continue_button.X = surface.W / 5

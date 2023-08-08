@@ -23,9 +23,9 @@ type Image struct {
 	X, Y           float32
 }
 
-func Load_image(filepath string, renderer *sdl.Renderer, assets embed.FS, scale float32, enable_logger bool) Image {
+func Load_image(filepath string, renderer *sdl.Renderer, assets embed.FS, scale float32, enable_logger bool) *Image {
 
-	error_image := Image{Image_rect: nil, Texture: nil, renderer: renderer}
+	error_image := &Image{Image_rect: nil, Texture: nil, renderer: renderer}
 
 	// Failed to read file
 	image_data, err := assets.ReadFile(filepath + ".png")
@@ -65,7 +65,7 @@ func Load_image(filepath string, renderer *sdl.Renderer, assets embed.FS, scale 
 		logger.Log("successfully loaded texture: "+trimmed_path[len(trimmed_path)-1], logger.SUCCESS)
 	}
 
-	return Image{Texture: texture, Image_rect: &image_rect, renderer: renderer, X: 0, Y: 0}
+	return &Image{Texture: texture, Image_rect: &image_rect, renderer: renderer, X: 0, Y: 0}
 }
 
 func (i Image) Draw_image(x, y *float32) {

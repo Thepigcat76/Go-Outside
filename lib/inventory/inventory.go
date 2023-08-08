@@ -38,7 +38,7 @@ func Init_inventory(renderer *sdl.Renderer, assets embed.FS) *Inventory {
 	slot1, slot2, slot3 := register_slot(), register_slot(), register_slot()
 	slots := []Slot{slot1, slot2, slot3}
 	texture := util.Load_image("assets/textures/slot", renderer, assets, 5.0, true)
-	return &Inventory{Slot_count: 3, texture: &texture, Slots: slots}
+	return &Inventory{Slot_count: 3, texture: texture, Slots: slots}
 }
 
 func (i *Inventory) Draw(items *item.Items, X, Y float32) {
