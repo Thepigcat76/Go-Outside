@@ -17,13 +17,13 @@ import (
 )
 
 type Image struct {
-	Image_rect     *sdl.FRect
-	Texture        *sdl.Texture
-	renderer       *sdl.Renderer
-	X, Y           float32
+	Image_rect *sdl.FRect
+	Texture    *sdl.Texture
+	renderer   *sdl.Renderer
+	X, Y       float32
 }
 
-func Load_image(filepath string, renderer *sdl.Renderer, assets embed.FS, scale float32, enable_logger bool) *Image {
+func LoadImage(filepath string, renderer *sdl.Renderer, assets embed.FS, scale float32, enable_logger bool) *Image {
 
 	error_image := &Image{Image_rect: nil, Texture: nil, renderer: renderer}
 

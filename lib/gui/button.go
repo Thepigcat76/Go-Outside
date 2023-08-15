@@ -20,8 +20,8 @@ type Button struct {
 }
 
 func Create_button(name string, texturePath string, renderer *sdl.Renderer, assets embed.FS, X, Y, W, H int32, visible bool) Button {
-	texture_std := util.Load_image(texturePath, renderer, assets, 1, true)
-	texture_sel := util.Load_image(texturePath+"_selected", renderer, assets, 1, true)
+	texture_std := util.LoadImage(texturePath, renderer, assets, 1, true)
+	texture_sel := util.LoadImage(texturePath+"_selected", renderer, assets, 1, true)
 	button_rect := sdl.Rect{X: X, Y: Y, W: W, H: H}
 
 	if !visible {

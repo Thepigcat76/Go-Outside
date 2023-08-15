@@ -16,7 +16,7 @@ type Font struct {
 	Rect     *sdl.FRect
 }
 
-func Load_font(font_path string, font_size int32, text string, text_color *sdl.Color, renderer *sdl.Renderer, assets embed.FS) Font {
+func LoadFont(font_path string, font_size int32, text string, text_color *sdl.Color, renderer *sdl.Renderer, assets embed.FS) Font {
 	error_font := Font{renderer: nil, Texture: nil, Surface: nil, Font: nil}
 
 	// Failed to read file

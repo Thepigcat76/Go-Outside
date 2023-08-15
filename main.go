@@ -32,7 +32,7 @@ func main() {
 	renderer := util.Create_renderer(window)
 	defer renderer.Destroy()
 
-	font := util.Load_font(font_path, 12, "Amogus", &sdl.Color{R: 255, G: 255, B: 255}, renderer, assets)
+	font := util.LoadFont(font_path, 12, "Amogus", &sdl.Color{R: 255, G: 255, B: 255}, renderer, assets)
 	defer font.Surface.Free()
 	defer font.Texture.Destroy()
 	defer font.Font.Close()
@@ -50,11 +50,11 @@ func main() {
 		panic(err)
 	}
 
-	items := item.Init_items(renderer, assets, font_path)
+	items := item.InitItems(renderer, assets, font_path)
 
-	test_sword := items.New("test_sword", item.COMMON)
+	test_sword := items.New("test_sword", item.Settings{Rarity: item.COMMON, Durability: 100, Tooltip: "amogus"})
 
-	items.New("copper_gear", item.RARE)
+	items.New("copper_gear", item.Settings{})
 
 	items.Draw()
 
@@ -70,7 +70,7 @@ func main() {
 
 	inventory := inventory.Init_inventory(renderer, assets)
 
-	test_texture := util.Load_image("assets/textures/button_template_selected", renderer, assets, 4, true)
+	test_texture := util.LoadImage("assets/textures/button_template_selected", renderer, assets, 4, true)
 
 	running := true
 	var slot int32 = 0
@@ -146,7 +146,6 @@ func main() {
 			break
 		}
 
-
 		if keys_pressed[sdl.SCANCODE_W] {
 			test_rect.Y -= 1
 		}
@@ -164,7 +163,7 @@ func main() {
 
 		renderer.SetRenderTarget(world_texture)
 
-		for y := 0; y < 30; y++{
+		for y := 0; y < 30; y++ {
 			for x := 0; x < 2; x++ {
 				renderer.Copy(test_texture.Texture, nil, &test_rect)
 			}

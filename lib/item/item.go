@@ -16,28 +16,42 @@ type Items struct {
 }
 
 type Item struct {
-	font    util.Font
-	Texture *util.Image
-	Name    string
-	Rarity  int32
+	font     util.Font
+	Texture  *util.Image
+	Name     string
+	settings *Settings
+}
+
+type Settings struct {
+	Rarity     int32
+	Durability int32
+	Tooltip    string
 }
 
 // Initialzies the items registry
-func Init_items(renderer *sdl.Renderer, assets embed.FS, font_path string) *Items {
+func InitItems(renderer *sdl.Renderer, assets embed.FS, font_path string) *Items {
 	return &Items{Renderer: renderer, Assets: assets, font_path: font_path}
 }
 
 // This is used to register an item
 // you can also use it as a reference
 // to this item by declaring it as a variable
-func (i *Items) New(name string, rarity int32) *Item {
-	texture := util.Load_image("assets/textures/items/"+name, i.Renderer, i.Assets, 2.0, true)
+func (i *Items) New(name string, settings Settings) *Item {
+	texture := util.LoadImage("assets/textures/items/"+name, i.Renderer, i.Assets, 2.0, true)
 	texture.X, texture.Y = 300, 300
-	font := util.Load_font(i.font_path, 12, name, &sdl.Color{R: 255, G: 255, B: 255}, i.Renderer, i.Assets)
+	font := util.LoadFont(i.font_path, 12, name, &sdl.Color{R: 255, G: 255, B: 255}, i.Renderer, i.Assets)
 
-	item := &Item{Name: name, Rarity: rarity, Texture: texture, font: font}
+	item := &Item{Name: name, Texture: texture, font: font}
 	i.registered = append(i.registered, item)
 	return item
+}
+
+func New() *Settings {
+	return &Settings{}
+}
+
+func (is *Settings) SetRarity(rarity int32) {
+	is.Rarity = rarity
 }
 
 // renders all items registered in the
@@ -46,11 +60,11 @@ func (i *Items) Draw() {
 	for _, item := range i.registered {
 		println(item.Name)
 	}
-
 }
 
+// Draw a single item
 func (i *Item) Draw_single(x, y *float32) {
 	i.Texture.Draw_image(x, y)
-	x_pos := i.Texture.X - float32(i.font.Surface.W) / 3.0
+	x_pos := i.Texture.X - float32(i.font.Surface.W)/3.0
 	i.font.Draw(x_pos, i.Texture.Y-20)
 }

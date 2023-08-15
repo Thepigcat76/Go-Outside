@@ -23,7 +23,7 @@ type Player struct {
 
 // textures: forward = 0, backward = 1, right = 2, left = 3
 func Create(textures [4]string, renderer *sdl.Renderer, assets embed.FS, scale, x, y float32) Player {
-	texture := util.Load_image(textures[0], renderer, assets, scale, true)
+	texture := util.LoadImage(textures[0], renderer, assets, scale, true)
 	return Player{Looking_forward: true, Texture: texture, inventory: nil, renderer: renderer, X: x, Y: y}
 }
 
