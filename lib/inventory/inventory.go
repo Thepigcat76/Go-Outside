@@ -41,6 +41,7 @@ func Init_inventory(renderer *sdl.Renderer, assets embed.FS) *Inventory {
 	return &Inventory{Slot_count: 3, texture: texture, Slots: slots}
 }
 
+// Draws the inventory and all items contained within
 func (i *Inventory) Draw(items *item.Items, X, Y float32) {
 	for y := 0; y < int(i.Slot_count); y++ {
 		i.texture.X, i.texture.Y = X, Y

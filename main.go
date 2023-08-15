@@ -53,10 +53,8 @@ func main() {
 	items := item.InitItems(renderer, assets, font_path)
 
 	test_sword := items.New("test_sword", item.Settings{Rarity: item.COMMON, Durability: 100, Tooltip: "amogus"})
-
-	items.New("copper_gear", item.Settings{})
-
-	items.Draw()
+	test_sword_1 := items.New("copper_gear", item.Settings{Rarity: item.COMMON, Durability: 100, Tooltip: "amogus"})
+	println(test_sword_1.Texture.X, test_sword_1.Texture.Y)
 
 	player := player.Create([4]string{"assets/textures/player"}, renderer, assets, 5.0, 200, 200)
 
@@ -169,13 +167,20 @@ func main() {
 			}
 		}
 
+		test_sword_1_Y := float32(600.0)
+
 		world.FillRect(nil, sdl.MapRGB(surface.Format, 0, 0, 0))
 
 		test_sword.Draw_single(&test_sword.Texture.X, &test_sword.Texture.Y)
+		
+		test_sword_1.Draw_single(&test_sword.Texture.X, &test_sword_1_Y)
+		println(test_sword_1.Texture.X, test_sword_1.Texture.Y)
 
 		player.Draw()
 
 		inventory.Draw(items, 0, 100)
+
+		item.Draw(items)
 
 		font.Draw(200, 100)
 

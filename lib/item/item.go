@@ -18,6 +18,7 @@ type Items struct {
 type Item struct {
 	font     util.Font
 	Texture  *util.Image
+	rect 	 *sdl.Rect
 	Name     string
 	settings *Settings
 }
@@ -40,8 +41,9 @@ func (i *Items) New(name string, settings Settings) *Item {
 	texture := util.LoadImage("assets/textures/items/"+name, i.Renderer, i.Assets, 2.0, true)
 	texture.X, texture.Y = 300, 300
 	font := util.LoadFont(i.font_path, 12, name, &sdl.Color{R: 255, G: 255, B: 255}, i.Renderer, i.Assets)
+	rect := util.Convert_frect_to_rect(texture.Image_rect)
 
-	item := &Item{Name: name, Texture: texture, font: font}
+	item := &Item{Name: name, Texture: texture, font: font, rect: &rect}
 	i.registered = append(i.registered, item)
 	return item
 }
@@ -56,15 +58,19 @@ func (is *Settings) SetRarity(rarity int32) {
 
 // renders all items registered in the
 // the Items struct
-func (i *Items) Draw() {
+func Draw(i *Items) {
 	for _, item := range i.registered {
-		println(item.Name)
+		rect := sdl.Rect{X: int32(item.Texture.X), Y: int32(item.Texture.Y), W: int32(item.Texture.Image_rect.W), H: int32(item.Texture.Image_rect.H)}
+		if util.MouseCollide(&rect) {
+			println("collide with mouse" + item.Name)
+		}
 	}
 }
 
 // Draw a single item
 func (i *Item) Draw_single(x, y *float32) {
 	i.Texture.Draw_image(x, y)
+	i.Texture.X, i.Texture.Y = *x, *y
 	x_pos := i.Texture.X - float32(i.font.Surface.W)/3.0
 	i.font.Draw(x_pos, i.Texture.Y-20)
 }

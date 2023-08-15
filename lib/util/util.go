@@ -43,6 +43,11 @@ func Mouse_clicked() (leftClick, rightClick bool) {
 	return leftClick, rightClick
 }
 
+func MouseCollide(rect *sdl.Rect) bool {
+	x, y, _ := sdl.GetMouseState()
+	return x >= rect.X && x <= rect.X+rect.W && y >= rect.Y && y <= rect.Y+rect.H
+}
+
 func Create_window(width int32, height int32, allowResize bool) *sdl.Window {
 	window, err := sdl.CreateWindow("test", sdl.WINDOWPOS_UNDEFINED, sdl.WINDOWPOS_UNDEFINED,
 		width, height, sdl.WINDOW_SHOWN)
